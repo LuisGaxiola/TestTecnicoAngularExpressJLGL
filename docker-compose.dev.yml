@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   FrontendAngular:
-    image: node:16.20.2-bookworm
+    image: node:14.21.3-bullseye
     working_dir: /work/FrontendAngular
     entrypoint: bash -c "sleep infinity"
     volumes:

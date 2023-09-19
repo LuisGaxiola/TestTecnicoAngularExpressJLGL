@@ -11,9 +11,9 @@ services:
         - FrontendAngular
         - BackendExpress
   FrontendAngular:
-    image: node:16.20.2-bookworm
+    image: node:14.21.3-bullseye
     working_dir: /work/FrontendAngular
-    entrypoint: bash -c  "npm install --force && npm run build && sleep infinity"
+    entrypoint: bash -c "npm install --force && npm run build && sleep infinity"
     volumes:
       - .:/work
     depends_on:
