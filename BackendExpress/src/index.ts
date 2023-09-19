@@ -128,7 +128,8 @@ app.listen(port, host, async () => {
       user: process.env["MYSQL_USER"],
       password: process.env["MYSQL_PASSWORD"],
       database: process.env["MYSQL_DB"],
-      connectionLimit: 5
+      connectionLimit: 5,
+      connectTimeout: 60 * 1000
     });
     console.log("DB: Iniciando migración")
     for (const migration of migrations) {
