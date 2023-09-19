@@ -34,6 +34,8 @@ Martes 19 de septiembre de 2023.
 Descargue el proyecto, ejecute el siguiente comando y espere hasta que el frontend de angular se construya (1 a 2 minutos). Una vez transcurrido ese tiempo puede visitar su navegador en la siguente ruta (puede cambiar el puerto en la línea 6 del archivo docker-compose.yml): http://localhost:8000
 
 ```sh
+git clone https://github.com/LuisGaxiola/TestTecnicoAngularExpressJLGL.git
+cd TestTecnicoAngularExpressJLGL
 docker-compose up -d
 ```
 
@@ -43,8 +45,8 @@ npx --force @angular/cli@10 new FrontendAngular
 ```
 
 # Observaciones personales
-El proyecto puede ser mejorado implementado las siguientes features:
+El proyecto puede ser mejorado a través de las siguientes features:
 
-- Implementación de un sistema Captcha
-- Acciones de administración protegidas con un sistema de inicio de sesión
-- Mover la coleción de categorías de un array en javascript a una tabla de la base de datos
+- Implementar un sistema Captcha, para evitar bots
+- Crear un un sistema de inicio de sesión, para proteger las acciones de administración
+- Mover la coleción de categorías de un array en javascript a una tabla de la base de datos, para evitar hard-coding
