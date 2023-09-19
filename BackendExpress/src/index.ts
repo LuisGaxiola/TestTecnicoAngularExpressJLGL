@@ -19,15 +19,15 @@ const pool = mysql.createPool({
 });
 
 /**
- * Crea una conexión a la base de datos y cuando termina la libera del pool
+ * Solicita al pool una conexión a la base de datos y cuando termina la libera del pool
  */
-async function connection<T>(con: (conn: mysql.PoolConnection) => T) {
-  let conn;
+async function getConnection<T>(callback: (connection: mysql.PoolConnection) => T) {
+  let connection;
   try {
-    conn = await pool.getConnection();
-    return await con(conn)
+    connection = await pool.getConnection();
+    return await callback(connection)
   } finally {
-    if (conn) conn.release(); //release to pool
+    if (connection) connection.release(); //release to pool
   }
 }
 
@@ -47,9 +47,10 @@ app.get('/contactos', async (req, res) => {
     const query = mostrarExclusivamenteMensajesNoVistos === 'true'
     ? "SELECT * FROM contactos WHERE visto = FALSE ORDER BY id DESC;"
     : "SELECT * FROM contactos ORDER BY id DESC;"
-    const [contactos] = await connection((conn) => conn.query(query))
+    const [contactos] = await getConnection((conn) => conn.query(query))
     res.send(contactos)
   } catch (error) {
+    console.log(error)
     res.send([])
   }
 });
@@ -69,7 +70,7 @@ app.post('/contactos', async (req, res) => {
     const { success } = postContactoModel.safeParse(contacto)
     if (!success) { return res.send({ success: false } satisfies PostContactosOutput) }
     const contactoArray = [contacto.nombreCompleto, contacto.nombreEmpresa, contacto.correoElectronico, contacto.telefono, contacto.categoria, contacto.mensaje]
-    await connection((conn) => conn.query("INSERT INTO contactos (nombreCompleto, nombreEmpresa, correoElectronico, telefono, categoria, mensaje, visto) VALUES (?, ?, ?, ?, ?, ?, FALSE);", contactoArray))
+    await getConnection((conn) => conn.query("INSERT INTO contactos (nombreCompleto, nombreEmpresa, correoElectronico, telefono, categoria, mensaje, visto) VALUES (?, ?, ?, ?, ?, ?, FALSE);", contactoArray))
     res.send({ success: true } satisfies PostContactosOutput)
   } catch (error) {
     console.log(error)
@@ -79,9 +80,10 @@ app.post('/contactos', async (req, res) => {
 
 app.delete('/contactos', async (req, res) => {
   try {
-    await connection((conn) => conn.query(`TRUNCATE TABLE contactos;`))
+    await getConnection((conn) => conn.query(`TRUNCATE TABLE contactos;`))
     res.send({ success: true } satisfies DeleteContactosOutput)
   } catch (error) {
+    console.log(error)
     res.send({ success: false } satisfies DeleteContactosOutput)
   }
 });
@@ -89,9 +91,10 @@ app.delete('/contactos', async (req, res) => {
 app.delete('/contactos/:id', async (req, res) => {
   try {
     const { id } = req.params
-    await connection((conn) => conn.query(`DELETE FROM contactos WHERE id = ?;`, id))
+    await getConnection((conn) => conn.query(`DELETE FROM contactos WHERE id = ?;`, id))
     res.send({ success: true } satisfies DeleteContactoOutput)
   } catch (error) {
+    console.log(error)
     res.send({ success: false } satisfies DeleteContactoOutput)
   }
 });
@@ -114,7 +117,7 @@ app.put('/contactos/:id', async (req, res) => {
     const { success } = putContactoModel.safeParse(contacto)
     if (!success) { return res.send({ success: false } satisfies PutContactoOutput) }
     const contactoArray = [contacto.nombreCompleto, contacto.nombreEmpresa, contacto.correoElectronico, contacto.telefono, contacto.categoria, contacto.mensaje, contacto.visto, contacto.id]
-    await connection((conn) => conn.query("UPDATE contactos SET nombreCompleto = ?, nombreEmpresa = ?, correoElectronico = ?, telefono = ?, categoria = ?, mensaje = ?, visto = ? WHERE id = ?;", contactoArray))
+    await getConnection((conn) => conn.query("UPDATE contactos SET nombreCompleto = ?, nombreEmpresa = ?, correoElectronico = ?, telefono = ?, categoria = ?, mensaje = ?, visto = ? WHERE id = ?;", contactoArray))
     res.send({ success: true } satisfies PutContactoOutput)
   } catch (error) {
     console.log(error)
@@ -128,11 +131,12 @@ app.listen(port, host, async () => {
   try {
     console.log("DB: Iniciando migración")
     for (const migration of migrations) {
-      await connection((conn) => conn.query(migration))
+      await getConnection((conn) => conn.query(migration))
     }
     console.log("DB: Migración completada")
   } catch (error) {
     console.log("DB: Error en migración")
+    console.log(error)
   }
   console.log(`Servidor corriendo en http://${host}:${port}`);
 });
