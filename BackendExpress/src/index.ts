@@ -142,6 +142,7 @@ app.put('/contactos/:id', async (req, res) => {
 const port = 80
 const host = '0.0.0.0'
 app.listen(port, host, async () => {
+  await pool.connect()
   await migrate()
   console.log(`Servidor corriendo en http://${host}:${port}`);
 });
