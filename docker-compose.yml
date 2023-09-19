@@ -21,7 +21,7 @@ services:
   BackendExpress:
     image: node:18.17.1-bookworm
     working_dir: /work/BackendExpress
-    entrypoint: bash -c  "npm install && npm run deploy"
+    entrypoint: bash -c  "npm install && ./wait-for-it.sh DbMySql:3306 --timeout=0 --strict -- npm run deploy"
     volumes:
       - .:/work
     depends_on:

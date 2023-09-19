@@ -19,15 +19,12 @@ const migrations = [
   `CREATE TABLE if not exists contactos (id INT NOT NULL AUTO_INCREMENT, nombreCompleto VARCHAR(1024) NOT NULL, nombreEmpresa VARCHAR(1024) NOT NULL, correoElectronico VARCHAR(1024) NOT NULL, telefono VARCHAR(16) NOT NULL, categoria VARCHAR(1024) NOT NULL, mensaje VARCHAR(8192) NOT NULL, visto BOOLEAN NOT NULL, fechaCreacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL, PRIMARY KEY (id));`
 ]
 
-let migrated = false
-
 async function migrate () {
   try {
     console.log("DB: Iniciando migración")
     for (const migration of migrations) {
       await getConnection((conn) => conn.query(migration))
     }
-    migrated = true
     console.log("DB: Migración completada")
   } catch (error) {
     console.log("DB: Error en migración")
@@ -42,7 +39,6 @@ async function getConnection<T>(callback: (connection: mysql.PoolConnection) => 
   let connection;
   try {
     connection = await pool.getConnection();
-    !migrated && await migrate()
     return await callback(connection)
   } finally {
     if (connection) connection.release(); //release to pool
@@ -146,5 +142,6 @@ app.put('/contactos/:id', async (req, res) => {
 const port = 80
 const host = '0.0.0.0'
 app.listen(port, host, async () => {
+  await migrate()
   console.log(`Servidor corriendo en http://${host}:${port}`);
 });
