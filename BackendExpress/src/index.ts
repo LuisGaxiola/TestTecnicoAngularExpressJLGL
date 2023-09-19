@@ -6,11 +6,31 @@ import helmet from "helmet";
 import { z } from 'zod'
 import { createUnionSchema } from './zod';
 
+let pool = mysql.createPool({
+  host: process.env["MYSQL_HOST"],
+  user: process.env["MYSQL_USER"],
+  password: process.env["MYSQL_PASSWORD"],
+  database: process.env["MYSQL_DB"],
+  connectionLimit: 5,
+  connectTimeout: 60 * 1000
+});
+
 const migrations = [
   `CREATE TABLE if not exists contactos (id INT NOT NULL AUTO_INCREMENT, nombreCompleto VARCHAR(1024) NOT NULL, nombreEmpresa VARCHAR(1024) NOT NULL, correoElectronico VARCHAR(1024) NOT NULL, telefono VARCHAR(16) NOT NULL, categoria VARCHAR(1024) NOT NULL, mensaje VARCHAR(8192) NOT NULL, visto BOOLEAN NOT NULL, fechaCreacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL, PRIMARY KEY (id));`
 ]
 
-let pool: mysql.Pool
+async function migrate () {
+  try {
+    console.log("DB: Iniciando migración")
+    for (const migration of migrations) {
+      await getConnection((conn) => conn.query(migration))
+    }
+    console.log("DB: Migración completada")
+  } catch (error) {
+    console.log("DB: Error en migración")
+    console.log(error)
+  }
+}
 
 /**
  * Solicita al pool una conexión a la base de datos y cuando termina la libera del pool
@@ -122,23 +142,6 @@ app.put('/contactos/:id', async (req, res) => {
 const port = 80
 const host = '0.0.0.0'
 app.listen(port, host, async () => {
-  try {
-    pool = mysql.createPool({
-      host: process.env["MYSQL_HOST"],
-      user: process.env["MYSQL_USER"],
-      password: process.env["MYSQL_PASSWORD"],
-      database: process.env["MYSQL_DB"],
-      connectionLimit: 5,
-      connectTimeout: 60 * 1000
-    });
-    console.log("DB: Iniciando migración")
-    for (const migration of migrations) {
-      await getConnection((conn) => conn.query(migration))
-    }
-    console.log("DB: Migración completada")
-  } catch (error) {
-    console.log("DB: Error en migración")
-    console.log(error)
-  }
+  await migrate()
   console.log(`Servidor corriendo en http://${host}:${port}`);
 });
