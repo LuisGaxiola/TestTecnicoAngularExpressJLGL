@@ -1,0 +1,32 @@
+version: '3.8'
+services:
+  FrontendAngular:
+    image: node:16.20.2-bookworm
+    working_dir: /work/FrontendAngular
+    entrypoint: bash -c "sleep infinity"
+    volumes:
+      - .:/work
+    depends_on:
+      - BackendExpress
+    ports:
+      - '8080:80'
+  BackendExpress:
+    image: node:16.20.2-bookworm
+    working_dir: /work/BackendExpress
+    entrypoint: bash -c "sleep infinity"
+    volumes:
+      - .:/work
+    depends_on:
+      - DbMySql
+    environment:
+      MYSQL_HOST: DbMySql
+      MYSQL_USER: root
+      MYSQL_PASSWORD: 'C6BuHFuWXU5pEEClSVmrWfArZmCW6WZzdgk_'
+      MYSQL_DB: "contacto"
+  DbMySql:
+    image: mysql:8.0.34
+    environment:
+      MYSQL_ROOT_PASSWORD: 'C6BuHFuWXU5pEEClSVmrWfArZmCW6WZzdgk_'
+      MYSQL_DATABASE: 'contacto'
+    volumes:
+      - ./DbMySqlDev:/var/lib/mysql

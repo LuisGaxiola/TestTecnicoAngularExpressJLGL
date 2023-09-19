@@ -1,0 +1,40 @@
+version: '3.8'
+services:
+  ProxyNginx:
+    image: nginx:1.25.1-alpine
+    ports:
+        - '8000:80'
+    volumes:
+        - ./:/www
+        - ./ProxyNginx/nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+        - FrontendAngular
+        - BackendExpress
+  FrontendAngular:
+    image: node:16.20.2-bookworm
+    working_dir: /work/FrontendAngular
+    entrypoint: bash -c  "npm install --force && npm run build && sleep infinity"
+    volumes:
+      - .:/work
+    depends_on:
+      - BackendExpress
+  BackendExpress:
+    image: node:18.17.1-bookworm
+    working_dir: /work/BackendExpress
+    entrypoint: bash -c  "npm install && npm run deploy"
+    volumes:
+      - .:/work
+    depends_on:
+      - DbMySql
+    environment:
+      MYSQL_HOST: DbMySql
+      MYSQL_USER: root
+      MYSQL_PASSWORD: 'TZBqeN9ZN0fn1gaYaQE0-lsENy2HCOx0ZDDN'
+      MYSQL_DB: "contacto"
+  DbMySQL:
+    image: mysql:8.0.34
+    environment:
+      MYSQL_ROOT_PASSWORD: 'TZBqeN9ZN0fn1gaYaQE0-lsENy2HCOx0ZDDN'
+      MYSQL_DATABASE: 'contacto'
+    volumes:
+      - ./DbMySql:/var/lib/mysql
