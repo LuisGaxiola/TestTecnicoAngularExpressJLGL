@@ -28,7 +28,7 @@ Es un formulario que permite la captura de la siguiente información:
 - Docker Compose
 
 # Instalar/Desplegar proyecto
-Descargue el proyecto, ejecute el comando docker-compose up -d y espere hasta que el frontend de Angular se construya (2 minutos aprox.). Una vez transcurrido ese tiempo puede visitar su navegador en la ruta http://localhost:8000 (puede cambiar el puerto en la línea 6 del archivo docker-compose.yml): 
+Descargue el proyecto, ejecute el comando docker-compose up -d y espere hasta que el frontend de Angular se construya (2 minutos aprox, obervará un 404 hasta entonces). Una vez transcurrido ese tiempo puede visitar su navegador en la ruta http://localhost:8000 (puede cambiar el puerto en la línea 6 del archivo docker-compose.yml): 
 
 ```sh
 git clone https://github.com/LuisGaxiola/TestTecnicoAngularExpressJLGL.git
