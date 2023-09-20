@@ -48,3 +48,6 @@ Este proyecto puede ser mejorado a través de las siguientes features:
 - Implementar un sistema Captcha, para evitar bots
 - Crear un un sistema de inicio de sesión, para proteger las acciones de administración
 - Mover la coleción de categorías de un array en javascript a una tabla de la base de datos, para evitar hard-coding
+
+# Sitio en vivo
+[https://ttae.luisgaxiola.info](https://ttae.luisgaxiola.info)
