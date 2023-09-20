@@ -36,6 +36,7 @@ cd TestTecnicoAngularExpressJLGL
 docker-compose up -d
 ```
 
+# Comandos útiles
 ## Creación de un proyecto con Angular 10
 ```sh
 npx --force @angular/cli@10 new FrontendAngular
